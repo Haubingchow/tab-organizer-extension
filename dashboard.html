@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tab Organizer</title>
+    <link rel="stylesheet" href="dashboard.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <section class="identity" aria-label="Dashboard summary">
+        <div class="mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div>
+          <h1>Tab Organizer</h1>
+          <p id="summary">Loading your open tabs...</p>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Tab tools">
+        <div class="clock" aria-label="Local date and time">
+          <strong id="localTime"></strong>
+          <span id="localDate"></span>
+        </div>
+        <button id="duplicatesButton" type="button">Close duplicates</button>
+        <button id="themeButton" class="secondary" type="button">Dark mode</button>
+        <button id="disableButton" class="secondary danger" type="button">Turn off this chrome extension</button>
+        <button id="refreshButton" class="secondary" type="button">Refresh</button>
+      </section>
+    </header>
+
+    <main>
+      <section class="stats" aria-label="Tab overview">
+        <article>
+          <strong id="tabCount">0</strong>
+          <span>open tabs</span>
+        </article>
+        <article>
+          <strong id="groupCount">0</strong>
+          <span>visual groups</span>
+        </article>
+        <article>
+          <strong id="bookmarkedCount">0</strong>
+          <span>bookmarked</span>
+        </article>
+        <article>
+          <strong id="duplicateCount">0</strong>
+          <span>duplicates</span>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <section class="organizer-panel" aria-label="Organized tabs">
+          <header class="panel-heading">
+            <div>
+              <h2>Open tabs</h2>
+              <p>Grouped by site and theme</p>
+            </div>
+            <label class="panel-search">
+              <span>Filter tabs</span>
+              <input id="searchInput" type="search" placeholder="Find a tab or site">
+            </label>
+          </header>
+          <section id="board" class="board" aria-live="polite"></section>
+          <section id="emptyState" class="empty" hidden>
+            <h2>No tabs match your search</h2>
+            <p>Try a different site name, page title, or theme.</p>
+          </section>
+        </section>
+
+        <aside class="new-page-panel" aria-label="Open a new page">
+          <section class="search-card">
+            <p class="eyebrow">New page</p>
+            <h2>Search or enter a website</h2>
+            <form id="webSearchForm" class="web-search">
+              <input id="webSearchInput" type="search" placeholder="Search Google or type a URL" autocomplete="off">
+              <button type="submit">Open</button>
+            </form>
+          </section>
+
+          <section class="quick-links" aria-label="Quick links">
+            <h2>Quick links</h2>
+            <div class="quick-link-grid">
+              <button type="button" data-url="https://mail.google.com">Gmail</button>
+              <button type="button" data-url="https://calendar.google.com">Calendar</button>
+              <button type="button" data-url="https://drive.google.com">Drive</button>
+              <button type="button" data-url="https://docs.google.com">Docs</button>
+              <button type="button" data-url="https://github.com">GitHub</button>
+              <button type="button" data-url="https://youtube.com">YouTube</button>
+            </div>
+          </section>
+
+          <section class="frequent-pages" aria-label="Frequently visited pages">
+            <h2>Past 30 days</h2>
+            <div id="frequentPages" class="frequent-list"></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <template id="groupTemplate">
+      <article class="group">
+        <header>
+          <div class="group-title">
+            <div class="group-icon"></div>
+            <div>
+              <h2></h2>
+              <p></p>
+            </div>
+          </div>
+        </header>
+        <div class="tab-list"></div>
+      </article>
+    </template>
+
+    <template id="tabTemplate">
+      <article class="tab-card">
+        <button class="tab-main" type="button">
+          <span class="favicon"></span>
+          <span class="tab-text">
+            <strong></strong>
+            <small></small>
+            <span class="tab-meta">
+              <span class="bookmark-note" hidden>Bookmarked</span>
+              <span class="load-note"></span>
+            </span>
+            <span class="load-bar"><span></span></span>
+          </span>
+        </button>
+        <button class="bookmark-action" type="button">Bookmark</button>
+        <button class="close-button" type="button" aria-label="Close tab">x</button>
+      </article>
+    </template>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>

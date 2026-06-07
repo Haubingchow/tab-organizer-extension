@@ -1,0 +1,17 @@
+﻿{
+  "manifest_version": 3,
+  "name": "Tab Organizer",
+  "description": "A visual new-tab dashboard for organizing open tabs by site and theme.",
+  "version": "1.0.0",
+  "permissions": ["tabs", "bookmarks", "history", "management", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "dashboard.html"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Organize tabs"
+  }
+}
