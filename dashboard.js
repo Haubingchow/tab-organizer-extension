@@ -47,16 +47,28 @@ function init() {
 
 async function loadOverview() {
   refreshButton.disabled = true;
-  overview = await sendMessage({ type: "GET_TAB_OVERVIEW" });
-  refreshButton.disabled = false;
-  render();
+  try {
+    overview = await sendMessage({ type: "GET_TAB_OVERVIEW" });
+    render();
+  } catch (error) {
+    summary.textContent = error.message;
+  } finally {
+    refreshButton.disabled = false;
+  }
 }
 
 async function closeDuplicates() {
   duplicatesButton.disabled = true;
-  overview = await sendMessage({ type: "CLOSE_DUPLICATES" });
-  duplicatesButton.disabled = false;
-  render();
+  duplicatesButton.textContent = "Closing...";
+  try {
+    overview = await sendMessage({ type: "CLOSE_DUPLICATES" });
+    render();
+  } catch (error) {
+    summary.textContent = error.message;
+  } finally {
+    duplicatesButton.disabled = false;
+    duplicatesButton.textContent = "Close duplicates";
+  }
 }
 
 function openSearchTarget(event) {

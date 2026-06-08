@@ -1,6 +1,6 @@
 ﻿# Tab Organizer Chrome Extension
 
-This extension replaces Chrome's new tab page with a visual tab dashboard. It shows your open tabs grouped by site and theme, gives you a browser-style search area for opening new pages, shows frequently visited pages from the past 30 days, lets you jump to tabs quickly, lets you bookmark or unbookmark tabs, closes duplicate pages, and displays a simple page loading percentage. Gmail tabs are grouped together as `Gmail`; other sites are grouped by domain.
+This extension replaces Chrome's new tab page with a visual tab dashboard. It shows your open tabs grouped by site and theme, gives you a browser-style search area for opening new pages, shows frequently visited pages from the past 30 days, lets you jump to tabs quickly, lets you bookmark or unbookmark tabs, closes duplicate websites, and displays a simple page loading percentage. Gmail tabs are grouped together as `Gmail`; other sites are grouped by domain.
 
 ## Install
 
@@ -20,7 +20,7 @@ This extension replaces Chrome's new tab page with a visual tab dashboard. It sh
 - Use the visual groups on the new tab page to understand your browsing by site or theme.
 - Bookmarked tabs show a `Bookmarked` note.
 - Select `Bookmark` or `Unbookmark` on a tab card to update that saved bookmark.
-- Select `Close duplicates` to keep one copy of each exact page URL and close the extras.
+- Select `Close duplicates` to keep one tab per website and close the extras.
 - Each tab card shows a loading percentage.
 - Use the extension button to open the visual board from anywhere.
 

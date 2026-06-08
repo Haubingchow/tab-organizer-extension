@@ -99,46 +99,66 @@ async function getTabOverview() {
 }
 
 async function getFrequentPages() {
-  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-  const results = await chrome.history.search({
-    text: "",
-    startTime: thirtyDaysAgo,
-    maxResults: 200
-  });
+  try {
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const results = await chrome.history.search({
+      text: "",
+      startTime: thirtyDaysAgo,
+      maxResults: 200
+    });
 
-  return results
-    .filter((item) => item.url && /^https?:\/\//i.test(item.url))
-    .sort((first, second) => (second.visitCount || 0) - (first.visitCount || 0))
-    .slice(0, 8)
-    .map((item) => ({
-      title: item.title || readableUrlForHistory(item.url),
-      url: item.url,
-      visitCount: item.visitCount || 0,
-      lastVisitTime: item.lastVisitTime || 0
-    }));
+    return results
+      .filter((item) => item.url && /^https?:\/\//i.test(item.url))
+      .sort((first, second) => (second.visitCount || 0) - (first.visitCount || 0))
+      .slice(0, 8)
+      .map((item) => ({
+        title: item.title || readableUrlForHistory(item.url),
+        url: item.url,
+        visitCount: item.visitCount || 0,
+        lastVisitTime: item.lastVisitTime || 0
+      }));
+  } catch {
+    return [];
+  }
 }
 
 async function closeDuplicateTabs() {
   const tabs = await chrome.tabs.query({});
-  const seenUrls = new Set();
+  const bySite = new Map();
   const duplicateIds = [];
 
   for (const tab of tabs.filter((item) => !isDashboardTab(item.url))) {
-    const key = normalizeUrl(tab.url);
+    const key = duplicateKey(tab.url);
     if (!key) continue;
+    if (!bySite.has(key)) bySite.set(key, []);
+    bySite.get(key).push(tab);
+  }
 
-    if (seenUrls.has(key)) {
-      duplicateIds.push(tab.id);
-    } else {
-      seenUrls.add(key);
+  for (const siteTabs of bySite.values()) {
+    if (siteTabs.length < 2) continue;
+    const keeper = siteTabs.find((tab) => tab.active) || siteTabs.find((tab) => tab.pinned) || siteTabs[0];
+    for (const tab of siteTabs) {
+      if (tab.id !== keeper.id) duplicateIds.push(tab.id);
     }
   }
 
   if (duplicateIds.length > 0) {
-    await chrome.tabs.remove(duplicateIds);
+    await removeTabsSafely(duplicateIds);
   }
 
   return getTabOverview();
+}
+
+async function removeTabsSafely(tabIds) {
+  try {
+    await chrome.tabs.remove(tabIds);
+  } catch {
+    for (const tabId of tabIds) {
+      try {
+        await chrome.tabs.remove(tabId);
+      } catch {}
+    }
+  }
 }
 
 async function unbookmarkTab(url) {
@@ -236,8 +256,10 @@ async function getBookmarkedUrls(tabs) {
   const uniqueUrls = [...new Set(tabs.map((tab) => tab.url).filter(Boolean))];
 
   for (const url of uniqueUrls) {
-    const matches = await chrome.bookmarks.search({ url });
-    if (matches.length > 0) urls.add(url);
+    try {
+      const matches = await chrome.bookmarks.search({ url });
+      if (matches.length > 0) urls.add(url);
+    } catch {}
   }
 
   return urls;
@@ -252,12 +274,18 @@ function getLoadPercent(tab) {
 function countDuplicateTabs(tabs) {
   const counts = new Map();
   for (const tab of tabs) {
-    const key = normalizeUrl(tab.url);
+    const key = duplicateKey(tab.url);
     if (!key) continue;
     counts.set(key, (counts.get(key) || 0) + 1);
   }
 
   return [...counts.values()].reduce((total, count) => total + Math.max(0, count - 1), 0);
+}
+
+function duplicateKey(rawUrl) {
+  const site = getSiteInfo(rawUrl);
+  if (site) return site.key;
+  return normalizeUrl(rawUrl);
 }
 
 function normalizeUrl(rawUrl) {
